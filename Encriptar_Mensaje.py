@@ -8,17 +8,20 @@ message = input("Message: ")
 #Image to encrypt in
 image = input("Name of image: ")
 
+#Channel
+color = int(input("Channel: "))
+
 #List that will store every value for each letter
 code = []
 
 #Codification matrix
-codificationMatrix = np.array([[3,0,2],[3,1,3],[1,1,2]])
+codificationMatrix = np.array([[0,1,1],[1,0,1],[1,0,0]])
 
 #Iterating letter by letter in the message
 for letter in message:
 
     #Archive that has the values of each letter in the alphabet
-    archive = open("code.txt", "r")
+    archive = open("codigo2.txt", "r")
     
     #Iterating each line in the archive
     for line in archive.readlines():
@@ -27,7 +30,7 @@ for letter in message:
         if letter == line[0]:
             
             #Adding to the list the code for that letter
-            code.append(int(line[1:3]))
+            code.append(int(line[1:4]))
             
     archive.close()
     
@@ -46,11 +49,11 @@ print(lenMessage)
 matrixMessage = np.array(code).reshape(math.ceil(len(message)/3),3)
 matrixMessage = np.transpose(matrixMessage)
 
-print(matrixMessage)
+
 
 #Multiplying the codification matrix by the matrix that has the message 
 codificatedMatrix = codificationMatrix.dot(matrixMessage)
-
+m,n = codificatedMatrix.shape
 print(codificatedMatrix)
 #Convert to list to iterate it
 matrixList = codificatedMatrix.tolist()
@@ -58,33 +61,20 @@ matrixList = codificatedMatrix.tolist()
 #Load an image
 imageToEncrypt = cv2.imread(image, 1)
 
-#Store the length of the message in the first pixel
-imageToEncrypt[1,1,0] = lenMessage
+#Store the number of columns and color in the first pixel
+imageToEncrypt[1,1,1] = n
+imageToEncrypt[1,1,0] = color
 
-PosX = 461
-PosY = 1965
-y = PosY
+
+PosX = 100
+PosY = 100
 pixel = [0,0,0]
 
-#Iterating the codificated matrix
-for i in range(len(matrixList)):
-    pixel = [0,0,0]
-    for j in range(len(matrixList[i])):
-        #Assignment of the values to the RGB pixels respectively
-        pixel[0] = math.floor(matrixList[i][j]/3)
-        pixel[1] = math.floor(matrixList[i][j]/3)
-        pixel[2] = math.floor(matrixList[i][j]/3)
-        
-        #If the sum is lower than the value in the codificated matrix
-        if sum(pixel) < matrixList[i][j]:
-            #Add the difference to the blue color
-            pixel[2] = pixel[2] + (matrixList[i][j] - sum(pixel))
-        #Assignment of the value to the positions X and Y 
-        imageToEncrypt[PosX, PosY] = pixel
-        PosY+=1
-    PosX+=1
-    PosY = y
- 
+ #Iterating the codificated matrix
+for i in range(0,m):
+     for j in range(0,n):
+         #Assignment of the values to the Green pixel
+         imageToEncrypt[PosX+20*i, PosY+20*j, color] = matrixList[i][j]
 #Storing the image with the message already encrypted
 cv2.imwrite("pruebaencriptada.png", imageToEncrypt)
 

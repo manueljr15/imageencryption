@@ -1,30 +1,28 @@
 import numpy as np
 import cv2
-import math
-PosX = 461
-PosY = 1965
+PosX = 100
+PosY = 100
 
 #Codification matrix
-matrizCodificacion = np.array([[3,0,2],[3,1,3],[1,1,2]])
+matrizCodificacion = np.array([[0,1,1],[1,0,1],[1,0,0]])
 
 #Loading the image
 image2 = cv2.imread("pruebaencriptada.png", 1)
 codigoD = []
 
-#Getting the length of the message
-longitudMD = image2[1,1,0]
+#Getting the number of columns of the message and the color where is stored
+n = image2[1,1,1]
+color = image2[1,1,0]
 
 #Iterating in the positions where the message is
-X = PosX
-for X in range(X, X+3, 1):
-    Y = PosY
+for i in range(0, 3):
     
-    for Y in range(Y, Y+int(math.ceil(longitudMD)/3),1):   
+    for j in range(0,n):   
         #Storing the values from the message in the list
-        codigoD.append(sum(image2[X,Y]))
+        codigoD.append(image2[PosX+20*i,PosY+20*j,color])
         
 #The list is now a matrix 3 x n
-matrizMensajeD = np.matrix(codigoD).reshape(3, int(math.ceil(longitudMD)/3))
+matrizMensajeD = np.matrix(codigoD).reshape(3,n)
 
 #Inverse codification matrix
 matrizInversa = np.linalg.inv(matrizCodificacion)
@@ -40,20 +38,18 @@ mensajeD = ""
 cod = ""
 
 #Iterating the list
-for i in range(len(matrizBusqueda)):
-    for j in range(len(matrizBusqueda[i])):
+for i in range(0,n):
+    for j in range(0,3):
         #Opening the archive with the values of each letter
-        archivo1 = open("code.txt", "r")
+        archivo1 = open("codigo2.txt", "r")
         #Reading each line 
         for codigo in archivo1.readlines():
             
             #Contatenation of the last characters (the values)
-            cod = codigo[-3:-1]
+            cod = codigo[-4:-1]
             letra = int(cod)
-            
             #If the value is the same than the value in the archive
             if round(matrizBusqueda[i][j]) == letra:
-                
                 #Contatenate the message decrypted
                 mensajeD = mensajeD + codigo[0]
         archivo1.close()
