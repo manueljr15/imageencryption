@@ -38,7 +38,7 @@ for letter in message:
 if len(message) < 3*math.ceil(len(message)/3):
     #For each character that is missing, it fills with spaces
     for missing in range(3*math.ceil(len(message)/3)-len(message)):
-        code.append(7)
+        code.append(99)
 
 
 #Storing the length of the message
